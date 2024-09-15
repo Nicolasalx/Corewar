@@ -1,0 +1,11 @@
+Donne un nom au champion
+.name "PPICHIER"
+Donne un commentaire au champion
+.comment "HAN HAN"
+
+Donne tous les label que tu utiliseras dans le programme
+
+load_value_2_param(-272, r.3)
+load_value_2_param(-272, r.2)
+copy_content(r.5, r.2, r.3)
+jump_to_index(-207)

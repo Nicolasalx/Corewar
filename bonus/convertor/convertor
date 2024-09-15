@@ -1,0 +1,106 @@
+#!/usr/bin/env python3
+import tkinter as tk
+
+def decimal_to_hexadecimal():
+    try:
+        decimal = int(number_entry.get())
+        hexadecimal_text.delete(1.0, tk.END)
+        hexadecimal_text.insert(tk.END, f"{hex(decimal)}")
+    except:
+        return
+
+def decimal_to_binary():
+    try:
+        decimal = int(number_entry.get())
+        binary_text.delete(1.0, tk.END)
+        binary_text.insert(tk.END, f"{bin(decimal)}")
+    except:
+        return
+
+def hexadecimal_to_binary():
+    try:
+        hexadecimal = number_entry.get()
+        decimal = int(hexadecimal, 16)
+        binary_text.delete(1.0, tk.END)
+        binary_text.insert(tk.END, f"{bin(decimal)}")
+    except:
+        return
+
+def hexadecimal_to_decimal():
+    try:
+        hexadecimal = number_entry.get()
+        decimal_text.delete(1.0, tk.END)
+        decimal_text.insert(tk.END, f"{int(hexadecimal, 16)}")
+    except:
+        return
+
+def binary_to_decimal():
+    try:
+        binary = number_entry.get()
+        decimal_text.delete(1.0, tk.END)
+        decimal_text.insert(tk.END, f"{int(binary, 2)}")
+    except:
+        return
+
+def binary_to_hexadecimal():
+    try:
+        binary = number_entry.get()
+        decimal = int(binary, 2)
+        hexadecimal_text.delete(1.0, tk.END)
+        hexadecimal_text.insert(tk.END, f"{hex(decimal)}")
+    except:
+        return
+
+def convert_all():
+    binary_text.delete(1.0, tk.END)
+    hexadecimal_text.delete(1.0, tk.END)
+    decimal_text.delete(1.0, tk.END)
+    decimal_to_hexadecimal()
+    decimal_to_binary()
+    hexadecimal_to_binary()
+    hexadecimal_to_decimal()
+    binary_to_decimal()
+    binary_to_hexadecimal()
+
+def handle_enter(event):
+    convert_all()
+
+window = tk.Tk()
+window.title("Number Converter")
+window.geometry("800x400")
+
+number_frame = tk.Frame(window)
+number_frame.pack(anchor="w", padx=220, pady=20)
+
+number_label = tk.Label(number_frame, text="Enter a value:  ")
+number_label.pack(side=tk.LEFT)
+
+number_entry = tk.Entry(number_frame)
+number_entry.pack(side=tk.LEFT)
+number_entry.bind("<Return>", handle_enter)
+
+decimal_to_hex_button = tk.Button(number_frame, text="Convert", command=convert_all)
+decimal_to_hex_button.pack(padx=10)
+
+text_frame = tk.Frame(window)
+text_frame.pack(pady=10)
+
+binary_label = tk.Label(text_frame, text="Binary:")
+binary_label.pack()
+
+binary_text = tk.Text(text_frame, height=3, width=30)
+binary_text.pack()
+
+decimal_label = tk.Label(text_frame, text="Decimal:")
+decimal_label.pack()
+
+decimal_text = tk.Text(text_frame, height=3, width=30)
+decimal_text.pack()
+
+hexadecimal_label = tk.Label(text_frame, text="Hexadecimal:")
+hexadecimal_label.pack()
+
+hexadecimal_text = tk.Text(text_frame, height=3, width=30)
+hexadecimal_text.pack()
+
+window.mainloop()

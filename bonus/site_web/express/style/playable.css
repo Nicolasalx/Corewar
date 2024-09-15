@@ -1,0 +1,50 @@
+body {
+    background-color: #151718;
+    font-family: 'Droid Sans Mono', 'monospace', monospace;
+}
+
+.garbage_1 {
+    width: 900px;
+    height: 950px;
+    background-color: darkgray;
+    font-weight: bold;
+    left: 20px;
+    font-size: 40px;
+    top: 117px;
+    position: relative;
+}
+
+.garbage_2 {
+    width: 900px;
+    height: 950px;
+    background-color: darkgray;
+    font-size: 18.5px;
+    position: absolute;
+    top: 200px;
+    left: 970px;
+    padding-left: 10px;
+}
+
+a.current-link {
+    text-decoration: underline;
+    text-decoration-color: #ffff00e1;
+    text-decoration-thickness: 7px;
+}
+
+.play:hover {
+    text-decoration: underline;
+    text-decoration-color: #ffff00e1;
+    text-decoration-thickness: 7px;
+}
+
+.contributors:hover {
+    text-decoration: underline;
+    text-decoration-color: #ffff00e1;
+    text-decoration-thickness: 7px;
+}
+
+.main:hover {
+    text-decoration: underline;
+    text-decoration-color: #ffff00e1;
+    text-decoration-thickness: 7px;
+}

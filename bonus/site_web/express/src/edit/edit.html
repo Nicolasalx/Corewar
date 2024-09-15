@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Edit</title>
+  <link rel="stylesheet" type="text/css" href="edit.css">
+</head>
+<body>
+  <div class="container">
+    <div class="information">
+      <div class="result-container">
+        <div class="result-row">
+          <div class="result-label">Champion's Name:</div>
+          <div class="result-value" id="name-result"></div>
+        </div>
+        <div class="result-row">
+          <div class="result-label">Comment's Name:</div>
+          <div class="result-value" id="comment-result"></div>
+        </div>
+      </div>
+      <div class="image-container">
+        <input type="file" id="image-input" accept="image/*">
+        <label for="image-input" id="image-label">Select an icon:</label>
+        <span id="image-name"></span>
+        <div class="image-container">
+          <img id="image" src="" style="object-fit: cover;">
+        </div>
+      </div>
+    </div>
+    <div class="text-container">
+      <textarea id="text-editor"></textarea>
+    </div>
+    <div class="button-container">
+      <div class="file-selection">
+        <input type="file" id="file-input" accept=".s">
+        <label for="file-input" id="file-label">Select .s File</label>
+        <span id="file-name"></span>
+        <input type="hidden" id="file-path" name="file-path">
+      </div>
+      <a href="#" class="return" onclick="updateChampion()">End Selection</a>
+    </div>
+    <button onclick="detecterValeurs()" class="valid">Valid File</button>
+  </div>
+  <script>
+    const fileInput = document.getElementById('file-input');
+const textEditor = document.getElementById('text-editor');
+const fileNameSpan = document.getElementById('file-name');
+
+fileInput.addEventListener('change', (event) => {
+  const file = event.target.files[0];
+  const reader = new FileReader();
+
+  reader.onload = (e) => {
+    const contents = e.target.result;
+    console.log(contents);
+    textEditor.value = contents;
+  };
+
+  reader.readAsText(file);
+
+  fileNameSpan.textContent = file.name;
+  fileNameSpan.classList.add('file-name-disp')
+});
+
+const imageInput = document.getElementById('image-input');
+const imageElement = document.getElementById('image');
+const imageNameSpan = document.getElementById('image-name');
+
+imageInput.addEventListener('change', (event) => {
+  const file = event.target.files[0];
+  const reader = new FileReader();
+
+  reader.onload = (e) => {
+    const contents = e.target.result;
+    console.log(contents);
+    imageElement.src = contents;
+  };
+
+  reader.readAsDataURL(file);
+
+  imageNameSpan.textContent = file.name;
+  imageElement.classList.add('image-displayed');
+});
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+    const championName = '${championName}';
+    const championComment = '${championComment}';
+
+    function detecterValeurs() {
+      const zoneTexte = document.getElementById("text-editor");
+      const contenu = zoneTexte.value;
+
+      const nameRegExp = /\.name\s+"([^"]+)"/;
+      const commentRegExp = /\.comment\s+"([^"]+)"/;
+
+      const nameMatch = contenu.match(nameRegExp);
+      const commentMatch = contenu.match(commentRegExp);
+
+      const name = nameMatch ? nameMatch[1] : "";
+      const comment = commentMatch ? commentMatch[1] : "";
+
+      document.getElementById("name-result").textContent = name || championName;
+      document.getElementById("comment-result").textContent = comment || championComment;
+    }
+
+    function updateChampion() {
+  const form = document.createElement('form');
+  form.method = 'POST';
+  form.action = '/edit';
+
+  const boxIdInput = document.createElement('input');
+  boxIdInput.type = 'hidden';
+  boxIdInput.name = 'boxId';
+  boxIdInput.value = urlParams.get('champion');
+  form.appendChild(boxIdInput);
+
+  const nameInput = document.createElement('input');
+  nameInput.type = 'hidden';
+  nameInput.name = 'name';
+  nameInput.value = document.getElementById('name-result').textContent;
+  if (nameInput.value == "") {
+    nameInput.value = "Champion " + boxIdInput.value;
+  }
+  form.appendChild(nameInput);
+
+  const commentInput = document.createElement('input');
+  commentInput.type = 'hidden';
+  commentInput.name = 'comment';
+  commentInput.value = document.getElementById('comment-result').textContent;
+  if (commentInput.value == "") {
+    commentInput.value = "Description " + boxIdInput.value;
+  }
+  form.appendChild(commentInput);
+
+  const filePathInput = document.createElement('input');
+  filePathInput.type = 'hidden';
+  filePathInput.name = 'file_name';
+  filePathInput.value = document.getElementById('file-name').textContent;
+  if (filePathInput.value == "") {
+    filePathInput.value = "file_name " + boxIdInput.value;
+  }
+  form.appendChild(filePathInput);
+
+  document.body.appendChild(form);
+  form.submit();
+}
+
+  </script>
+</body>
+</html>

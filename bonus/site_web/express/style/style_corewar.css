@@ -1,0 +1,50 @@
+header {
+    list-style: none;
+    background-color: rgb(42,42,42);
+    display: flex;
+    justify-content: center;
+    font-family: 'Ethnocentric', sans-serif ;
+}
+
+header nav ul {
+    font-size: 40px;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+header nav a {
+    color: rgb(255, 255, 255);
+    text-decoration: none;
+    padding: 30px;
+    justify-content: flex;
+}
+
+div b {
+    display: flex;
+    text-decoration: none;
+    color: rgb(0, 0, 0);
+    font-size: 60px;
+    margin: 8px;
+    padding: 8px;
+    justify-content: flex-start;
+}
+
+main {
+    height: 836px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+
+    color: #fff;
+}
+
+#main-nav.hidden {
+    display: none;
+}
+
+section {
+    text-align: center;
+    font-size: 90px;
+}

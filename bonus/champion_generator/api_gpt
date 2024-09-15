@@ -1,0 +1,97 @@
+#!/usr/bin/env python
+
+from tkinter import *
+from tkinter import scrolledtext
+import tkinter.messagebox as messagebox
+import openai
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+
+openai.api_key = os.getenv("OPEN_AI_KEY")
+
+def gpt3_request(prompt):
+    response = openai.Completion.create(
+        engine="text-davinci-003",
+        prompt=prompt,
+        max_tokens=500,
+        n=1,
+        stop=None,
+        temperature=0.7
+    )
+    return response.choices[0].text.strip()
+
+def correct_print(result):
+    for i in range(0, len(result), 90):
+        result += result[i:i+90] + "\n"
+    return result
+
+def get_request_from_file():
+    with open("request_gpt", 'r') as fichier:
+        contenu = fichier.read()
+    return contenu
+
+result = ""
+
+def send_request_gpt():
+    texte = my_input_user.get()
+    prompt = get_request_from_file()
+    global result
+    result = gpt3_request(prompt + texte)
+    post_request.delete("1.0", "end")
+    post_request.insert("1.0", result)
+
+def copier_texte():
+    texte_copie = post_request.get("1.0", "end-1c")
+    window.clipboard_clear()
+    window.clipboard_append(texte_copie)
+    messagebox.showinfo("Copie réussie", "Le texte a été copié dans le presse-papiers.")
+
+def save():
+    print("Save")
+
+def options():
+    print("Option")
+
+window = Tk()
+window.geometry('1920x1080')
+window.title =("Générateur de champion avec l'API GPT")
+window['bg'] = 'grey'
+window.resizable(height=True, width=True)
+
+title = Label(window, text="Générateur de champion", font=("Verdana", 40, "italic bold"), fg="white", bg="grey")
+title.grid(row=0, column=0)
+
+my_menu = Menu(window)
+
+file = Menu(my_menu, tearoff=0)
+file.add_command(label="Enregistrer sous ...", command=save)
+
+option = Menu(my_menu, tearoff=0)
+option.add_command(label="Options", command=options)
+
+my_menu.add_cascade(label="Fichier", menu=file)
+my_menu.add_cascade(label="Options", menu=option)
+
+window.config(menu=my_menu)
+
+description = Label(window, text="C'est une API GPT", font=("Verdana", 20, "italic bold"), fg="white", bg="grey")
+description.grid(row=1, column=0, padx=550, pady=10)
+
+my_input_user = StringVar()
+input_user = Entry(window, textvariable=my_input_user, width=90)
+input_user.grid(row=2, column=0, padx=550, pady=10)
+
+send_request = Button(window, text="Envoyer une requete", bg="white", command=send_request_gpt)
+send_request.grid(row=3, column=0, padx=550, pady=10)
+
+bouton_copier = Button(window, text="Copier", command=copier_texte)
+bouton_copier.grid(row=4, column=0, padx=550, pady=10)
+
+post_request = scrolledtext.ScrolledText(window, font=("Verdana", 12), height=20, width=100)
+post_request.grid(row=5, column=0, padx=10, pady=10, columnspan=2)
+
+post_request.insert("1.0", result)
+
+window.mainloop()

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Launch Corewar</title>
+  <link rel="stylesheet" type="text/css" href="execute.css">
+</head>
+<body>
+  <header>
+    <nav id="main-nav">
+      <ul>
+        <li><a href="http://localhost:3000/play">Back</a></li>
+        <li><a href="http://localhost:3000/">MENU</a></li>
+      </ul>
+    </nav>
+  </header>
+  <h2>Champions Ready to Fight</h2>
+  <table id="championTable">
+    {{TABLE_CONTENT}}
+  </table>
+
+  <button id="launchButton" class="launch">Launch Corewar</button>
+
+  <script>
+    document.getElementById('launchButton').addEventListener('click', function() {
+      fetch('/execute', {
+        method: 'POST'
+      })
+      .then(function(response) {
+        if (response.ok) {
+          console.log('Corewar execution started successfully.');
+        } else {
+          console.error('Failed to start Corewar execution.');
+        }
+      })
+      .catch(function(error) {
+        console.error('An error occurred while executing Corewar:', error);
+      });
+    });
+  </script>
+</body>
+</html>

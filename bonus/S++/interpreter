@@ -1,0 +1,217 @@
+#!/usr/bin/env python3
+
+import sys
+
+all_instruction = [
+    ['alive_id_player', 'live', 1],
+    ['load_value_2_param', 'ld', 2],
+    ['store_param', 'st', 2],
+    ['add_content', 'add', 3],
+    ['subtraction_content', 'sub', 3],
+    ['binary_and', 'and', 3],
+    ['binary_or', 'or', 3],
+    ['binary_xor', 'xor', 3],
+    ['jump_to_index', 'zjmp', 1],
+    ['modify_carry', 'ldi', 3],
+    ['copy_content', 'sti', 3],
+    ['create_new_prog', 'fork', 1],
+    ['long_load_value', 'lld', 2],
+    ['long_load_value_index', 'lldi', 3],
+    ['create_new_long_prog', 'lfork', 1],
+    ['print', 'aff', 1]
+]
+
+nb_attack = len(all_instruction)
+
+name = ""
+have_name = False
+comment = ""
+have_comment = False
+variable = []
+have_variable = False
+instruction = []
+have_instruction = False
+instruction_program = []
+
+def get_each_line_in_array(filepath):
+    with open(filepath, 'r') as file:
+        lines = file.readlines()
+    return lines
+
+def extract_str(str):
+    start_index = str.find('"') + 1
+    end_index = str.find('"', start_index)
+    word = str[start_index:end_index]
+    return word
+
+def get_name(line, i):
+    global name
+    global have_name
+    if (have_name == True):
+        return
+    if (line[i] == "Donne un nom au champion"):
+        name = extract_str(line[i + 1])
+        have_name = True
+
+def get_comment(line, i):
+    global comment
+    global have_comment
+    if (have_comment == True):
+        return
+    if (line[i] == "Donne un commentaire au champion"):
+        comment = extract_str(line[i + 1])
+        have_comment = True
+
+def get_variable(line, i):
+    global variable
+    global have_variable
+    nb_move = 0
+    if (have_variable == True):
+        return 0
+    if (line[i] == "Donne tous les label que tu utiliseras dans le programme"):
+        for j in range(i + 1, len(line)):
+            if (len(line[j]) > 0):
+                variable.append(line[j])
+                nb_move += 1
+            else:
+                have_variable = True
+                return nb_move
+        have_variable = True
+    return nb_move
+
+def get_instruction(line, i):
+    global instruction
+    global have_instruction
+    global have_name
+    global have_comment
+    global have_variable
+    if (have_name == False or have_comment == False or have_variable == False or have_instruction == True):
+        return
+    for j in range(i + 1, len(line)):
+        if (len(line[j]) > 0):
+            instruction.append(line[j])
+        else:
+            return
+    have_instruction = True
+    return
+
+def parse_each_line(line):
+    for i in range(0, len(line)):
+        get_name(line, i)
+        get_comment(line, i)
+        i += get_variable(line, i)
+        get_instruction(line, i)
+
+def delete_back(string):
+    return string[:-1]
+
+def delete_all_backslash(line):
+    for i in range(0, len(line)):
+        line[i] = delete_back(line[i])
+
+def check_argument_not_null():
+    if (len(name) == 0):
+        print("Aucun nom donné")
+        exit(84)
+    if (len(comment) == 0):
+        print("Aucun commentaire donné")
+        exit(84)
+
+def construct_name():
+    global name
+    string = '    .name ""abc""'
+    name = string.replace('"abc"', name)
+
+def construct_comment():
+    global comment
+    string = '    .comment ""abc""'
+    comment = string.replace('"abc"', comment)
+
+def detect_instruction(str, instruction_program):
+    word = str.split('(')
+    call = str.split('.')
+
+    for i in range(0, nb_attack):
+        result = ""
+        arg = []
+        if (word[0] == all_instruction[i][0]):
+            result = all_instruction[i][1]
+            new_word = word[1][:-1]
+            array_arg = new_word.split(',')
+            for i in range(0, len(array_arg)):
+                new_res = array_arg[i].split('.')
+                if (len(new_res) == 1):
+                    new_res[0] = "%" + new_res[0]
+                    new_res[0] = new_res[0].replace(" ", "")
+                    arg.append(new_res[0])
+                else:
+                    res = new_res[0] + new_res[1]
+                    arg.append(res)
+
+            value_to_add = "    " + result
+            for i in range(0, len(arg)):
+                arg[i] = arg[i].replace(" ", "")
+                value_to_add = value_to_add + " " + arg[i]
+            instruction_program.append(value_to_add)
+
+    if (call[0] == "call"):
+        for i in range(0, len(variable)):
+            new_word = variable[i].split(':')
+            if (new_word[0] == call[1]):
+                parties = new_word[1].split("(")
+                alive = parties[0]
+                nombre = parties[1].rstrip(")")
+                array = nombre.split('.')
+                result = 0
+                for i in range (0, len(all_instruction)):
+                    if (parties[0] == all_instruction[i][0]):
+                        result = all_instruction[i][1]
+                if (len(array) == 1):
+                    value_to_add = call[1] + ": " + result + " %" + nombre
+                else:
+                    value_to_add = call[1] + ": " + alive + nombre
+                instruction_program.append(value_to_add)
+
+def construct_instruction():
+    global instruction
+    global instruction_program
+    for i in range(0, len(instruction)):
+        detect_instruction(instruction[i], instruction_program)
+
+def main():
+    if len(sys.argv) != 2:
+        print("No file gived")
+        exit(84)
+    filename = sys.argv[1]
+    line = get_each_line_in_array(filename)
+    delete_all_backslash(line)
+    parse_each_line(line)
+    check_argument_not_null()
+    construct_name()
+    construct_comment()
+    construct_instruction()
+
+    array_filename = filename.split('.')
+    new_filename = array_filename[0] + ".s"
+
+    fichier = open(new_filename, "w")
+
+    fichier.write(name)
+    fichier.write("\n")
+    fichier.write(comment)
+    fichier.write("\n")
+    fichier.write("\n")
+    for i in range(0, len(instruction_program)):
+        fichier.write(instruction_program[i])
+        fichier.write("\n")
+
+    fichier.close()
+    if (have_name == False or have_comment == False or have_variable == False or have_instruction == False):
+        print("Bad file")
+        exit(84)
+
+if __name__ == '__main__':
+    try:
+        main()
+    except:
+        exit(84)

@@ -1,0 +1,12 @@
+Donne un nom au champion
+-> "Jon Snow"
+Donne un commentaire au champion
+-> "Winter is coming"
+
+Donne tous les label que tu utiliseras dans le programme
+crow:alive_id_player(234)
+
+copy_content(r.1, crow, 1)
+call.crow
+load_value_2_param(0, r.3, i.4)
+jump_to_index(crow)

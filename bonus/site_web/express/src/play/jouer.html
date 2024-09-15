@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="stylesheet" type="text/css" href="style_corewar.css">
+  <link rel="stylesheet" type="text/css" href="jouer.css">
+</head>
+<body>
+  <header>
+    <nav id="main-nav">
+      <ul>
+        <li><a href="http://localhost:3000" class="main">MENU</a></li>
+        <li><a href="http://localhost:3000/play" class="current-link">PLAY</a></li>
+        <li><a href="http://localhost:3000/playable" class="playable">INFORMATION</a></li>
+        <li><a href="http://localhost:3000/contributors" class="contributors">CONTRIBUTORS</a></li>
+      </ul>
+    </nav>
+  </header>
+  <h1>Champions Select</h1>
+  <div id="caseContainer" class="caseContainer">
+    <div class="case" id="case_1">
+      <h2>Champion 1</h2>
+      <p>Description 1</p>
+      <button class="edit" onclick="redirectToEditPage(1)">Edit</button>
+    </div>
+    <div class="case" id="case_2">
+      <h2>Champion 2</h2>
+      <p>Description 2</p>
+      <button class="edit" onclick="redirectToEditPage(2)">Edit</button>
+    </div>
+  </div>
+  <button onclick="addCase()" id="addButton" class="option_button">+</button>
+  <div class="clear"></div>
+  <button onclick=redirectTolauch() class="launch">Launch Corewar</button>
+  <script>
+    var champions = JSON.parse('<%- JSON.stringify(champions) %>');
+    var maxCases = 4;
+    function addCase() {
+  var caseContainer = document.getElementById("caseContainer");
+  var maxCases = 4;
+  var currentCaseCount = caseContainer.childElementCount;
+  if (currentCaseCount < maxCases) {
+    var newCase = document.createElement("div");
+    newCase.className = "case";
+    var championIndex = currentCaseCount + 1;
+    var h2 = document.createElement("h2");
+    var p = document.createElement("p");
+    var xhr = new XMLHttpRequest();
+    xhr.open("GET", "/champions", true);
+    xhr.onload = function() {
+      if (xhr.status === 200) {
+        var championsData = JSON.parse(xhr.responseText);
+        if (championIndex <= championsData.length) {
+          h2.textContent = championsData[championIndex - 1].name;
+          p.textContent = championsData[championIndex - 1].comment;
+        } else {
+          h2.textContent = "Champion " + championIndex;
+          p.textContent = "Description " + championIndex;
+        }
+      } else {
+        h2.textContent = "Champion " + championIndex;
+        p.textContent = "Description " + championIndex;
+      }
+    };
+    xhr.send();
+    var editButton = document.createElement("button");
+    editButton.textContent = "Edit";
+    editButton.className = "edit";
+    editButton.onclick = function() {
+      redirectToEditPage(championIndex);
+    };
+    var deleteButton = document.createElement("button");
+    deleteButton.textContent = "Delete";
+    deleteButton.className = "delete";
+    deleteButton.onclick = function() {
+      deleteCase(newCase);
+    };
+    var buttonsContainer = document.createElement("div");
+    buttonsContainer.className = "buttons-container";
+    buttonsContainer.appendChild(deleteButton);
+    buttonsContainer.appendChild(editButton);
+    newCase.appendChild(h2);
+    newCase.appendChild(p);
+    newCase.appendChild(buttonsContainer);
+    caseContainer.appendChild(newCase);
+    if (currentCaseCount + 1 === maxCases) {
+      var addButton = document.getElementById("addButton");
+      addButton.style.display = "none";
+    }
+  }
+}
+
+function deleteCase(caseElement) {
+  var caseContainer = document.getElementById("caseContainer");
+  caseContainer.removeChild(caseElement);
+
+  var addButton = document.getElementById("addButton");
+  addButton.style.display = "block";
+}
+    function redirectToEditPage(championIndex) {
+      var editURL = "http://localhost:3000/edit?champion=" + championIndex;
+      window.location.href = editURL;
+    }
+    window.onload = function() {
+      var caseContainer = document.getElementById("caseContainer");
+      var currentCaseCount = caseContainer.childElementCount;
+  
+      if (currentCaseCount >= maxCases) {
+        var addButton = document.getElementById("addButton");
+        addButton.style.display = "none";
+      }
+    };
+    function redirectTolauch() {
+      window.location.href = 'http://localhost:3000/execute';
+    }
+  </script>
+</body>
+</html>
